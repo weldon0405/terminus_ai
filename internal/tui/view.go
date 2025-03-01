@@ -15,7 +15,7 @@ func (m Model) View() string {
 
 	// Info line with selected model and keybindings
 	info := m.styles.Info.Render(fmt.Sprintf(
-		"Model: %s (Press Tab to change) | Ctrl+Enter to send | Ctrl+C to quit",
+		"Model: %s (Press Tab to change) | Enter to send | Ctrl+C to quit",
 		m.selectedModel,
 	))
 	b.WriteString("\n" + info + "\n\n")

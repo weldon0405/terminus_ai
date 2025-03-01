@@ -5,6 +5,7 @@ import (
 	"github.com/charmbracelet/bubbles/textarea"
 	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/weldon0405/terminus_ai/internal/api"
 	"github.com/weldon0405/terminus_ai/internal/config"
 )
@@ -54,7 +55,7 @@ func NewModel(cfg *config.Config) Model {
 	// Initialize spinner for loading state
 	s := spinner.New()
 	s.Spinner = spinner.Dot
-	s.Style = spinner.Style.Foreground(spinner.Style.GetForeground())
+	s.Style = lipgloss.NewStyle().Foreground(lipgloss.Color("205"))
 
 	// Create API client
 	client := api.NewClient(cfg.APIKey, cfg.APIEndpoint)

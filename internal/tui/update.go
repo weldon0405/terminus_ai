@@ -48,29 +48,32 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case tea.KeyCtrlC, tea.KeyEsc:
 			return m, tea.Quit
 
-		case tea.KeyCtrlEnter:
+		case tea.KeyEnter:
+			// For Enter key, check if user input is not empty
 			if !m.loading && strings.TrimSpace(m.textarea.Value()) != "" {
-				// Create user message
-				userMsg := api.Message{
-					Role:    "user",
-					Content: m.textarea.Value(),
+				if !m.loading && strings.TrimSpace(m.textarea.Value()) != "" {
+					// Create user message
+					userMsg := api.Message{
+						Role:    "user",
+						Content: m.textarea.Value(),
+					}
+
+					// Add to message history
+					m.messages = append(m.messages, userMsg)
+
+					// Update viewport content
+					vpContent := m.viewport.View()
+					vpContent += "\n\n" + m.styles.UserMsg.Render("You: ") + "\n" + m.textarea.Value()
+					m.viewport.SetContent(vpContent)
+					m.viewport.GotoBottom()
+
+					// Clear the textarea and start loading
+					m.textarea.Reset()
+					m.loading = true
+
+					// Send the message to the API
+					return m, m.sendMessageCmd()
 				}
-
-				// Add to message history
-				m.messages = append(m.messages, userMsg)
-
-				// Update viewport content
-				vpContent := m.viewport.Content
-				vpContent += "\n\n" + m.styles.UserMsg.Render("You: ") + "\n" + m.textarea.Value()
-				m.viewport.SetContent(vpContent)
-				m.viewport.GotoBottom()
-
-				// Clear the textarea and start loading
-				m.textarea.Reset()
-				m.loading = true
-
-				// Send the message to the API
-				return m, m.sendMessageCmd()
 			}
 
 		case tea.KeyTab:
@@ -90,7 +93,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			// Handle error
 			m.err = msg.err
 			errorMsg := m.styles.Error.Render(fmt.Sprintf("Error: %v", msg.err))
-			newContent := m.viewport.Content + "\n\n" + errorMsg
+			newContent := m.viewport.View() + "\n\n" + errorMsg
 			m.viewport.SetContent(newContent)
 			m.viewport.GotoBottom()
 		} else {
@@ -108,14 +111,14 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.messages = append(m.messages, assistantMsg)
 
 				// Update viewport
-				vpContent := m.viewport.Content
+				vpContent := m.viewport.View()
 				vpContent += "\n\n" + m.styles.AssistantMsg.Render("Claude: ") + "\n" + msg.response.Content[0].Text
 				m.viewport.SetContent(vpContent)
 				m.viewport.GotoBottom()
 			} else if msg.response.Error.Message != "" {
 				// Handle API error
 				errorMsg := m.styles.Error.Render(fmt.Sprintf("API Error: %s", msg.response.Error.Message))
-				newContent := m.viewport.Content + "\n\n" + errorMsg
+				newContent := m.viewport.View() + "\n\n" + errorMsg
 				m.viewport.SetContent(newContent)
 				m.viewport.GotoBottom()
 			}
@@ -144,7 +147,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 		// Re-render the viewport with the right dimensions
-		m.viewport.SetContent(m.viewport.Content)
+		currentContent := m.viewport.View()
+		m.viewport.SetContent(currentContent)
 
 	case spinner.TickMsg:
 		if m.loading {

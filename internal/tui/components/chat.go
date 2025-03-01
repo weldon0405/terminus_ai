@@ -76,7 +76,7 @@ func (m *ChatModel) AddUserMessage(content string) {
 	m.messages = append(m.messages, message)
 
 	// Update the viewport content
-	vpContent := m.viewport.Content
+	vpContent := m.viewport.View()
 	vpContent += "\n\n" + m.userStyle.Render("You: ") + "\n" + content
 	m.viewport.SetContent(vpContent)
 	m.viewport.GotoBottom()
@@ -92,7 +92,7 @@ func (m *ChatModel) AddAssistantMessage(content string) {
 	m.messages = append(m.messages, message)
 
 	// Update the viewport content
-	vpContent := m.viewport.Content
+	vpContent := m.viewport.View()
 	vpContent += "\n\n" + m.assistantStyle.Render("Claude: ") + "\n" + content
 	m.viewport.SetContent(vpContent)
 	m.viewport.GotoBottom()
@@ -101,7 +101,7 @@ func (m *ChatModel) AddAssistantMessage(content string) {
 // AddErrorMessage adds an error message to the chat
 func (m *ChatModel) AddErrorMessage(err error) {
 	// Update the viewport content
-	vpContent := m.viewport.Content
+	vpContent := m.viewport.View()
 	vpContent += "\n\n" + m.errorStyle.Render(fmt.Sprintf("Error: %v", err))
 	m.viewport.SetContent(vpContent)
 	m.viewport.GotoBottom()
@@ -125,6 +125,6 @@ func (m *ChatModel) Resize(width, height int) {
 	m.SetSize(width, height)
 
 	// Force re-render with new dimensions
-	content := m.viewport.Content
+	content := m.viewport.View()
 	m.viewport.SetContent(strings.TrimSpace(content))
 }
