@@ -51,7 +51,7 @@ A Terminal User Interface (TUI) application for interacting with Anthropic's Cla
 
 4. Build the application:
    ```
-   go build -o claude-tui
+   go build ./cmd/terminus_ai
    ```
 
 ## Usage
