@@ -59,7 +59,7 @@ A Terminal User Interface (TUI) application for interacting with Anthropic's Cla
 Run the application:
 
 ```
-./claude-tui
+./terminus_ai
 ```
 
 ### Keyboard Controls
